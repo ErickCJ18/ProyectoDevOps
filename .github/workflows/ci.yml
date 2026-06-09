@@ -1,0 +1,16 @@
+name: Notificacion NTFY
+
+on:
+  push:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send notification to ntfy
+        run: |
+          curl -H "Title: GitHub Push" \
+               -H "Priority: default" \
+               -d "Nuevo push realizado en el repositorio ${{ github.repository }} por ${{ github.actor }}. Commit: ${{ github.sha }}" \
+               https://ntfy.sh/devops-itla
