@@ -1,16 +1,37 @@
-name: Notificacion NTFY
+name: Build, Test and Notify
 
 on:
   push:
 
 jobs:
-  notify:
+  test-and-notify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send notification to ntfy
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install compiler
+        run: sudo apt-get update && sudo apt-get install -y g++
+
+      - name: Compile program
+        run: g++ salutator.cpp -o hello
+
+      - name: Run unit test
         run: |
-          curl -H "Title: GitHub Push" \
+          output=$(./hello)
+          if [ "$output" != "Hola Mundo" ]; then
+            echo "Test failed"
+            echo "Expected: Hola Mundo"
+            echo "Actual: $output"
+            exit 1
+          fi
+          echo "Test passed"
+
+      - name: Send ntfy notification
+        if: success()
+        run: |
+          curl -H "Title: GitHub Actions" \
                -H "Priority: default" \
-               -d "Nuevo push realizado en el repositorio ${{ github.repository }} por ${{ github.actor }}. Commit: ${{ github.sha }}" \
+               -d "Practica 4. Push correctamente realizado por ${{ github.actor }}" \
                https://ntfy.sh/devops-itla
