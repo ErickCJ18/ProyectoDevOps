@@ -12,5 +12,3 @@ int main()
     cout<<say_hi()<<endl;
     return 0;
 }
-
-
